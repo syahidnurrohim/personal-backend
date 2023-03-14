@@ -1,0 +1,11 @@
+Skalabilitas
+- Karena kemungkinan bakal menggunakan beberapa database berbeda 
+  maka implementasi abstract pattern wajib digunakan 
+  contoh: PG & Notion
+    JournalModel -> PG
+    JournalModel -> Notion
+      Ketika saya memanggil JournalModel.GetAll(), maka saya akan mendapat data journal
+      kemudian bagaimaan jika saya ingin mengganti sumber data nya dari PG ke Notion misalnya
+      untuk itu saya memerlukan sebuah metode untuk mencantumkan tipe Database / Model
+      agar method yang dipanggil di JournalModel mengikuti method dari tipe Database / Model
+      yang saya cantumkan ke dalam JournalModel
