@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"personal-backend/api/types"
 	"personal-backend/utils"
+	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/dstotijn/go-notion"
+	"github.com/google/uuid"
 )
 
 type journalModel struct {
@@ -23,7 +24,7 @@ type journalBlock struct {
 	Paragraph journalParagraph `json:"paragraph"`
 }
 
-func NewJournalModel() types.IJournalModel {
+func NewJournalModelNotion() types.IJournalModel {
 	databaseID := "026f69c6d7d64555a893a8218185dd8b"
 	database := utils.NewNotionDatabase(databaseID)
 	return &journalModel{
@@ -55,7 +56,6 @@ func (m *journalModel) GetAllJournal() ([]types.JournalData, error) {
 			return nil, fmt.Errorf("page id %s not found", row.ID)
 		}
 
-		spew.Dump(blockChildren)
 		var content []string
 
 		for _, c := range blockChildren {
@@ -76,12 +76,13 @@ func (m *journalModel) GetAllJournal() ([]types.JournalData, error) {
 		}
 
 		journalData = append(journalData, types.JournalData{
-			ID:          row.ID,
-			Title:       title,
-			Content:     content,
-			DateCreated: page.GetPageCratedTime(),
+			ID:           uuid.New().String(),
+			Title:        title,
+			Content:      strings.Join(content, "<br>"),
+			DateCreated:  page.GetPageCratedTime(),
+			DateModified: page.GetPageModifiedTime(),
+			NotionPageID: row.ID,
 		})
-		break
 	}
 	return journalData, nil
 }

@@ -1,0 +1,1 @@
+[2023-03-15 19:46:54.48047951 +0700 WIB m=+22.660853825][ERROR PROGRAM] -> sql: Scan called without calling Next on line 51 file /home/porrosyhd123/Project/personal-backend/tools/scrapper/notion.go

@@ -8,7 +8,7 @@ import (
 )
 
 func GetAllJournal(c *gin.Context) {
-	data, err := models.NewJournalModel().GetAllJournal()
+	data, err := models.NewJournalModelNotion().GetAllJournal()
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status":  http.StatusNotFound,

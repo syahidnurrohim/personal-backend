@@ -3,7 +3,7 @@ package utils
 import (
 	"context"
 	"encoding/json"
-	env "personal-backend/config"
+	"os"
 
 	"github.com/dstotijn/go-notion"
 )
@@ -19,7 +19,7 @@ type NotionPage struct {
 }
 
 func NewNotionDatabase(databaseID string) *NotionDatabase {
-	apiKey := env.GetEnv("NOTION_SECRET_KEY")
+	apiKey := os.Getenv("NOTION_SECRET_KEY")
 	client := notion.NewClient(apiKey)
 	return &NotionDatabase{databaseID: databaseID, client: client}
 }
@@ -28,11 +28,7 @@ func (d *NotionDatabase) GetRows() ([]notion.Page, error) {
 	res, err := d.client.QueryDatabase(
 		context.Background(),
 		d.databaseID,
-		&notion.DatabaseQuery{
-			Sorts: []notion.DatabaseQuerySort{
-				{Property: "Created", Direction: "ascending"},
-			},
-		})
+		&notion.DatabaseQuery{})
 	if err != nil {
 		return nil, err
 	}
@@ -69,4 +65,8 @@ func (p *NotionPage) GetPageTitle() (string, error) {
 
 func (p *NotionPage) GetPageCratedTime() string {
 	return p.page.CreatedTime.Format("2006-01-02")
+}
+
+func (p *NotionPage) GetPageModifiedTime() string {
+	return p.page.LastEditedTime.Format("2006-01-02")
 }
