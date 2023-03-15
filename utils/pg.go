@@ -16,7 +16,7 @@ func PGConnection(pgc *sql.DB) *pgConnection {
 	}
 }
 
-func (pgc *pgConnection) Insert(table string, data map[string]interface{}) (*sql.Rows, error) {
+func (pgc *pgConnection) Insert(table string, data map[string]interface{}) (sql.Result, error) {
 	var keys []string
 	var values []interface{}
 	var valuesTemplate []string
@@ -30,12 +30,52 @@ func (pgc *pgConnection) Insert(table string, data map[string]interface{}) (*sql
 	}
 
 	queryStr := fmt.Sprintf(`insert into %s (%s) values (%s)`, table, strings.Join(keys, ", "), strings.Join(valuesTemplate, ", "))
+	stmt, err := pgc.connection.Prepare(queryStr)
+	if err != nil {
+		return nil, err
+	}
 
-	return pgc.connection.Query(queryStr, values...)
+	return stmt.Exec(values...)
+}
+
+func (pgc *pgConnection) Update(table string, data map[string]interface{}, filter map[string]interface{}) (sql.Result, error) {
+	var values []interface{}
+	var setTemplates []string
+
+	kLen := 1
+	for k, v := range data {
+		values = append(values, v)
+		setTemplates = append(setTemplates, k+"=$"+fmt.Sprintf("%v", kLen))
+		kLen++
+	}
+
+	queryStr := fmt.Sprintf(`update %s set %s`, table, strings.Join(setTemplates, ", "))
+	stmt, err := pgc.connection.Prepare(queryStr)
+	if err != nil {
+		return nil, err
+	}
+
+	return stmt.Exec(values...)
 }
 
 func (pgc *pgConnection) Query(query string, args ...any) (*sql.Rows, error) {
 	return pgc.connection.Query(query, args...)
+}
+
+func (pgc *pgConnection) PreparedQuery(query string, args ...any) (*sql.Rows, error) {
+	stmt, err := pgc.connection.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	return stmt.Query(args...)
+}
+
+func (pgc *pgConnection) PreparedExec(query string, args ...any) (sql.Result, error) {
+	stmt, err := pgc.connection.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	return stmt.Exec(args...)
 }
 
 func (pgc *pgConnection) QueryRow(query string, args ...any) *sql.Row {

@@ -24,7 +24,7 @@ type journalBlock struct {
 	Paragraph journalParagraph `json:"paragraph"`
 }
 
-func NewJournalModelNotion() types.IJournalModel {
+func NewJournalModel() types.IJournalModel {
 	databaseID := "026f69c6d7d64555a893a8218185dd8b"
 	database := utils.NewNotionDatabase(databaseID)
 	return &journalModel{
