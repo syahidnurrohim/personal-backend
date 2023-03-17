@@ -1,1 +1,1 @@
-[2023-03-15 21:33:16.389744863 +0700 WIB m=+0.004027876][ERROR PROGRAM] -> database not initialized on line 24 file /home/porrosyhd123/Project/personal-backend/utils/helpers.go
+[2023-03-17 21:31:55.954360575 +0700 WIB m=+42.964121335][ERROR PROGRAM] -> page id 126b838d-f106-4f74-8211-bc8d33bb451b not found on line 13 file /home/porrosyhd123/Project/personal-backend/tools/scrapper/notion.go

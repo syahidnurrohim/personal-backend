@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"fmt"
 	"personal-backend/api/types"
 	"personal-backend/utils"
@@ -59,20 +58,12 @@ func (m *journalModel) GetAllJournal() ([]types.JournalData, error) {
 		var content []string
 
 		for _, c := range blockChildren {
-			var block journalBlock
-
-			mar, err := c.MarshalJSON()
+			b := utils.NewNotionBlock(c)
+			plainText, err := b.GetBlockPlainText()
 			if err != nil {
-				return nil, fmt.Errorf("cannot marshal block id %s to json", c.ID())
+				return nil, err
 			}
-
-			if json.Unmarshal(mar, &block) != nil {
-				return nil, fmt.Errorf("cannot unmarshal block id %s to journal block type", c.ID())
-			}
-
-			for _, b := range block.Paragraph.RichText {
-				content = append(content, b.PlainText)
-			}
+			content = append(content, plainText)
 		}
 
 		journalData = append(journalData, types.JournalData{

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"personal-backend/config"
+	"reflect"
 	"time"
 )
 
@@ -26,6 +27,36 @@ func DB() *pgConnection {
 		return nil
 	}
 	return PGConnection(config.PGC)
+}
+
+func ToMap(val interface{}) (map[string]interface{}, error) {
+	v := reflect.ValueOf(val)
+	if v.Kind() != reflect.Map {
+		return nil, errors.New("assigned value is not the type of map")
+	}
+
+	retMap := make(map[string]interface{})
+	for _, key := range v.MapKeys() {
+		strct := v.MapIndex(key)
+		retMap[key.String()] = strct.Interface()
+	}
+	return retMap, nil
+}
+
+func ToSlice(val interface{}) ([]interface{}, error) {
+	v := reflect.ValueOf(val)
+	if v.Kind() != reflect.Slice {
+		return nil, errors.New("assigned value is not the type of slice")
+	}
+
+	retSlice := make([]interface{}, v.Len())
+	if v.Kind() == reflect.Slice {
+		for i := 0; i < v.Len(); i++ {
+			retSlice[i] = v.Index(i).Interface()
+		}
+	}
+
+	return retSlice, nil
 }
 
 func SetInterval(fn func(), interval time.Duration) {
