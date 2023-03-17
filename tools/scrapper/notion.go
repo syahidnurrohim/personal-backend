@@ -42,8 +42,9 @@ func SynchronizeJournal() {
 			res.Scan(&notionID)
 			_, err := db.Update(`daily_journal`, map[string]interface{}{
 				"title":         row.Title,
-				"content":       row.Content,
 				"date_modified": row.DateModified,
+				"date_created":  row.DateCreated,
+				"content":       row.Content,
 			}, map[string]interface{}{
 				"notion_page_id": notionID,
 			})

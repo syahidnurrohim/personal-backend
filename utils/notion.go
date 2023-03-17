@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/dstotijn/go-notion"
 )
 
@@ -27,7 +26,6 @@ type NotionBlock struct {
 
 func NewNotionDatabase(databaseID string) *NotionDatabase {
 	apiKey := os.Getenv("NOTION_SECRET_KEY")
-	spew.Dump(apiKey)
 	client := notion.NewClient(apiKey)
 	return &NotionDatabase{databaseID: databaseID, client: client}
 }
@@ -102,6 +100,7 @@ func (b *NotionBlock) GetBlockPlainText() (string, error) {
 
 	findPlainText = func(blockMap map[string]interface{}) []string {
 		plainText := []string{}
+
 		for k, v := range blockMap {
 			if k == "plain_text" {
 				plainText = append(plainText, fmt.Sprintf("%s", v))

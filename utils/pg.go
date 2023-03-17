@@ -41,6 +41,7 @@ func (pgc *pgConnection) Insert(table string, data map[string]interface{}) (sql.
 func (pgc *pgConnection) Update(table string, data map[string]interface{}, filter map[string]interface{}) (sql.Result, error) {
 	var values []interface{}
 	var setTemplates []string
+	var filterTemplates []string
 
 	kLen := 1
 	for k, v := range data {
@@ -48,8 +49,17 @@ func (pgc *pgConnection) Update(table string, data map[string]interface{}, filte
 		setTemplates = append(setTemplates, k+"=$"+fmt.Sprintf("%v", kLen))
 		kLen++
 	}
+	for k, v := range filter {
+		filterTemplates = append(filterTemplates, k+"=$"+fmt.Sprintf("%v", kLen))
+		values = append(values, v)
+		kLen++
+	}
 
-	queryStr := fmt.Sprintf(`update %s set %s`, table, strings.Join(setTemplates, ", "))
+	queryStr := fmt.Sprintf(`update %s set %s where %s`,
+		table,
+		strings.Join(setTemplates, ", "),
+		strings.Join(filterTemplates, " and "),
+	)
 	stmt, err := pgc.connection.Prepare(queryStr)
 	if err != nil {
 		return nil, err
