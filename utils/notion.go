@@ -36,9 +36,7 @@ func (d *NotionDatabase) GetRows() ([]notion.Page, error) {
 	res, err := d.client.QueryDatabase(
 		context.Background(),
 		d.databaseID,
-		&notion.DatabaseQuery{
-			Sorts: []notion.DatabaseQuerySort{},
-		})
+		&notion.DatabaseQuery{})
 	if err != nil {
 		return nil, err
 	}
@@ -109,21 +107,23 @@ func (b *NotionBlock) GetBlockPlainText() (string, error) {
 				plainText = append(plainText, fmt.Sprintf("%s", v))
 				continue
 			}
+
 			blockMap2, err := ToMap(v)
 			if err == nil {
-				plt := findPlainText(blockMap2)
-				plainText = append(plainText, plt...)
-			} else {
-				blockSlice, err := ToSlice(v)
-				if err == nil {
-					for _, bs := range blockSlice {
-						blockMap2, err := ToMap(bs)
-						if err == nil {
-							plainText = append(plainText, findPlainText(blockMap2)...)
-						}
+				plainText = append(plainText, findPlainText(blockMap2)...)
+				continue
+			}
+
+			blockSlice, err := ToSlice(v)
+			if err == nil {
+				for _, bs := range blockSlice {
+					blockMap2, err := ToMap(bs)
+					if err == nil {
+						plainText = append(plainText, findPlainText(blockMap2)...)
 					}
 				}
 			}
+
 		}
 		return plainText
 	}
